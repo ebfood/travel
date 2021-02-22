@@ -2,7 +2,7 @@
   <div>
     <div class="header">热门推荐</div>
     <ul>
-      <li class="item border-bottom" v-for="item of itemList" :key="item.id">
+      <li class="item border-bottom" v-for="item of list" :key="item.id">
         <img class="item-img" :alt="item.title" :src="item.imgUrl">
         <div class="item-info">
           <p class="item-title">{{ item.title }}</p>
@@ -17,25 +17,8 @@
 <script>
 export default {
   name: 'HomeRecommend',
-  data () {
-    return {
-      itemList: [{
-        id: '0001',
-        imgUrl: 'https://youimg1.c-ctrip.com/target/fd/tg/g2/M08/8C/43/CghzgVWw9JmAPVuAAD1jt4fxYi8104_C_230_260_Q60.jpg',
-        title: '上海自然博物馆',
-        desc: '华东地区亲子景点榜第10名'
-      }, {
-        id: '0002',
-        imgUrl: 'https://youimg1.c-ctrip.com/target/fd/tg/g2/M08/8C/43/CghzgVWw9JmAPVuAAD1jt4fxYi8104_C_230_260_Q60.jpg',
-        title: '上海自然博物馆',
-        desc: '华东地区亲子景点榜第10名'
-      }, {
-        id: '0003',
-        imgUrl: 'https://youimg1.c-ctrip.com/target/fd/tg/g2/M08/8C/43/CghzgVWw9JmAPVuAAD1jt4fxYi8104_C_230_260_Q60.jpg',
-        title: '上海自然博物馆',
-        desc: '华东地区亲子景点榜第10名'
-      }]
-    }
+  props: {
+    list: Array
   }
 }
 </script>
@@ -62,16 +45,19 @@ export default {
   .item-info
     flex: 1 //撑开屏幕的宽度
     padding .1rem
-    min-width 0//超出范围...
+    min-width 0 //超出范围...
+
     .item-title
       line-height .54rem
       font-size .32rem
       ellipse()
+
     .item-desc
       line-height .4rem
       color #aaa
       text-indent .05rem
       ellipse()
+
     .item-button
       margin-top .2rem
       padding 0 .1rem //上下0， 左右.1rem
