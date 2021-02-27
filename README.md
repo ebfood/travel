@@ -483,3 +483,48 @@ box-sizing 属性可以被用来调整这些表现:
 ![image-20210227135526549](https://ebcode.oss-cn-shanghai.aliyuncs.com/img/image-20210227135526549.png)
 
 这里吧 box-sizing 设置成border-box,让padding也算到宽度里面
+
+## 城市列表List.vue
+
+### 布局
+
+#### 设置元素间隔1像素颜色
+
+```stylus
+.border-topbottom
+  &:before
+    border-color #ccc
+  &:after
+    border-color #ccc
+```
+
+#### 更好看的滚动
+
+```stylus
+.list
+  position absolute
+  top 1.58rem
+  bottom 0
+  left 0
+  right 0
+  overflow hidden
+```
+
+锁死屏幕区域
+
+better scroll
+
+https://github.com/ustbhuangyi/better-scroll
+
+根据readme来
+
+```javascript
+import BScroll from 'better-scroll'
+export default {
+  name: 'List',
+  mounted () {
+    this.scroll = new BScroll(this.$refs.wrapper)
+  }
+}
+```
+
