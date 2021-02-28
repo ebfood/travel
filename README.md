@@ -528,3 +528,158 @@ export default {
 }
 ```
 
+## ajax
+
+## 兄弟组件传值，完成滚动bar
+
+正常应该用bus，这里要练习alphabet和list，是一个爹，所以用发送事件。
+
+要在alphabet里面绑定一个点击事件
+
+```html
+@click="handleLetterClick"
+```
+
+```javascript
+handleLetterClick (e) {
+  this.$emit('change', e.target.innerText)
+}
+```
+
+然后发送一个事件，携带一个值就是字母的内容
+
+```html
+<city-alphabet :cities="cities" @change="handleChange"></city-alphabet>
+```
+
+父亲组件里面，吧change监听一下，绑定一个函数, 用一个变量可以记录下来刚刚携带的值
+
+```javascript
+handleChange (v) {
+      this.letter = v
+    }
+```
+
+就可以吧携带的值传递到list组件里面去了
+
+```html
+<city-list :hot="hotCities" :cities="cities" :letter="letter"></city-list>
+```
+
+然后在list组件里面就可以添加一个watch，来监控letter
+
+```javascript
+watch: {
+  letter () {
+    console.log(this.letter)
+  }
+}
+```
+
+接下来要想办法获取相应的dom，传递给betterscroll的方法实现跳转。方法就是在for的时候顺便给个ref。
+
+```javascript
+watch: {
+  letter () {
+    if (this.letter) {
+      let element = this.$refs[this.letter][0]
+      this.scroll.scrollToElement(element)
+    }
+  }
+}
+```
+
+
+
+但是现在都是点击才变化，应该写一个滑动变化，思路是计算手指距离A的长度，然后除以每个字母的长度，就是字母的index！
+
+首先吧字母表的字母拿出来，这样就可以直接下标索引
+
+```javascript
+computed: {
+  letters () {
+    const letters = []
+    for (let i in this.cities) {
+      letters.push(i)
+    }
+    return letters
+  }
+},
+```
+
+然后还是给每一个li一个ref，就是字母本身, 目的是获取他的dom
+
+给li在增加三个事件
+
+```
+@touchstart="handleTouchStart"
+@touchmove="handleTouchMove"
+@touchend="handleTouchEnd"
+```
+
+绑定函数
+
+```javascript
+handleTouchStart () {
+  this.touchStatus = true
+},
+handleTouchMove (e) {
+  if (this.touchStatus) {
+    let topY = this.$refs['A'][0].offsetTop
+    let currY = e.touches[0].clientY - 79
+    let index = Math.floor((currY - topY) / 20)
+    if (index >= 0 && index < this.letters.length) {
+      this.$emit('change', this.letters[index])
+    }
+  }
+},
+handleTouchEnd () {
+  this.touchStatus = false
+}
+```
+
+offsetTop是根据组件告诉的距离
+
+clinetY是距离顶部距离
+
+-79是因为这两个距离相差79px
+
+/20是因为每个字母高20px
+
+### 性能优化
+
+#### 变量优化
+
+把不变的变量放在data，因为开始渲染的时候alphabet的长度是0，并没有高度，所以要在updated修改topY
+
+```javascript
+data () {
+  return {
+    touchStatus: false,
+    topY: 0
+  }
+},
+updated () {
+  this.topY = this.$refs['A'][0].offsetTop
+}
+```
+
+#### 性能节流
+
+```javascript
+handleTouchMove (e) {
+      if (this.touchStatus) {
+        if (this.timer) {
+          clearTimeout(this.timer)
+        }
+        this.timer = setTimeout(() => {
+          let currY = e.touches[0].clientY - 79
+          let index = Math.floor((currY - this.topY) / 20)
+          if (index >= 0 && index < this.letters.length) {
+            this.$emit('change', this.letters[index])
+          }
+        }, 16)
+      }
+    },
+```
+
