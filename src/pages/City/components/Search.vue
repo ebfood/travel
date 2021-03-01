@@ -8,6 +8,7 @@
         <li v-for="city of this.searchRes"
             :key="city.id"
             class="search-item border-topbottom"
+            @click="handleCityClick(city.name)"
         >{{ city.name }}
         </li>
         <li class="search-item border-topbottom" v-show="searchStatus"> 没有找到匹配结果</li>
@@ -18,7 +19,7 @@
 
 <script>
 import BScroll from 'better-scroll'
-
+import { mapMutations } from 'vuex'
 export default {
   name: 'CitySearch',
   props: {
@@ -29,6 +30,13 @@ export default {
       keywords: '',
       searchRes: [],
       timer: null
+    }
+  },
+  methods: {
+    ...mapMutations(['changeCity']),
+    handleCityClick (city) {
+      this.changeCity(city)
+      this.$router.push('./')
     }
   },
   watch: {

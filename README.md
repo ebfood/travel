@@ -752,3 +752,89 @@ computed: {
 Computed 当keywords有东西，结果列表却没有的时候，就显示没搜索到结果
 
 keywords控制是否显示整个div
+
+
+
+## Vuex
+
+要实现主页和城市页面共享的数据，就要用vuex啦，安装过程都在官网
+这里新建一个store目录，下新建index.js
+
+```javascript
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+    city: '上海'
+  },
+  mutations: {
+    changeCity (state, city) {
+      state.city = city
+    }
+  }
+})
+```
+
+然后在main.js的根实例里面引用store
+
+```javascript
+new Vue({
+  el: '#app',
+  router,
+  store,
+  components: { App },
+  template: '<App/>'
+})
+```
+
+然后就可以在任意页面里愉快的改值了
+
+```javascript
+handleCityClick (city) {
+  this.$store.commit('changeCity', city)
+  this.$router.push('./')
+}
+```
+
+第一句调用mutation改变state的值，第二句用router的路由返回首页
+
+## vuex进阶写法
+
+优化基础写法，长见识
+
+### localStorage + 分离state mutations
+
+创建mutations.js state.js
+把两个对象的内容迁移
+
+state.js
+
+```javascript
+let defaultCity = '上海'
+try {
+  defaultCity = localStorage.city
+} catch (e) {}
+
+export default {
+  city: defaultCity
+}
+```
+
+mutations.js
+
+```javascript
+export default {
+  changeCity (state, city) {
+    state.city = city
+    try {
+      localStorage.city = city
+    } catch (e) {}
+  }
+}
+```
+
+localStorage可以实现保存当前选择的城市
+
