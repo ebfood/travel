@@ -838,3 +838,31 @@ export default {
 
 localStorage可以实现保存当前选择的城市
 
+mapStates mapMutations 可以映射函数和变量，忘了的话去文档看
+
+## keep-alive
+
+缓存ajax请求到的内容
+
+```html
+<keep-alive>
+  <router-view/>
+</keep-alive>
+```
+
+如果要传参就用 activated钩子, 保证改变城市之后要重新ajax
+
+```javascript
+computed: {
+    ...mapState({
+      currCity: 'city'
+    })
+  },
+activated () {
+  if (this.lastCity !== this.currCity) {
+    // console.log(this.lastCity + this.currCity)
+    this.lastCity = this.currCity
+    this.getHomeInfo()
+  }
+}
+```
