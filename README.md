@@ -683,3 +683,72 @@ handleTouchMove (e) {
     },
 ```
 
+## 实现搜索逻辑
+
+整体逻辑就是，input绑定变量，watch这个变量，如果改变，就搜索城市列表，更新结果列表。然后把结果列表for到li上，然后就是小细节，当输入没有结果的时候显示‘无结果’，当不输入的时候不显示结果div，这两个用v-show实现。
+
+首先data
+
+```javascript
+data () {
+  return {
+    keywords: '',
+    searchRes: [],
+    timer: null
+  }
+},
+```
+
+keywords是输入，searchRes是结果列表
+
+```javascript
+watch: {
+  keywords () {
+    if (this.timer) {
+      clearTimeout(this.timer)
+    }
+    if (!this.keywords) {
+      this.searchRes = []
+      return
+    }
+    this.timer = setTimeout(() => {
+      let result = []
+      for (let i in this.cities) {
+        this.cities[i].forEach((value) => {
+          if (value.spell.indexOf(this.keywords) > -1 || value.name.indexOf(this.keywords) > -1) {
+            result.push(value)
+          }
+        })
+      }
+      this.searchRes = result
+    }, 100)
+  }
+},
+```
+
+每次keywords更新，就更新searchRes，然后渲染到html
+
+接着添加结果列表的滚动
+
+```javascript
+mounted () {
+  this.scroll = new BScroll(this.$refs.search, {
+    movable: true,
+    zoom: true
+  })
+},
+```
+
+然后是v-show的逻辑
+
+```javascript
+computed: {
+  searchStatus () {
+    return (!this.searchRes.length && this.keywords.length)
+  }
+}
+```
+
+Computed 当keywords有东西，结果列表却没有的时候，就显示没搜索到结果
+
+keywords控制是否显示整个div
